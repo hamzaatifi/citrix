@@ -1,0 +1,330 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Cash Register</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--tx:#1b2333;--mut:#6b7488;--bd:#dde2ee;--ac:#2563eb;--cash:#92400e;--carte:#dc2626;--neg:#dc2626;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10141d;--card:#1a2030;--tx:#e8ecf5;--mut:#98a2b8;--bd:#2c3550;--ac:#6b9bff;--cash:#b45309;--carte:#ef4444;--neg:#f87171;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#10141d;--card:#1a2030;--tx:#e8ecf5;--mut:#98a2b8;--bd:#2c3550;--ac:#6b9bff;--cash:#b45309;--carte:#ef4444;--neg:#f87171;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background-image:linear-gradient(rgba(0,0,0,0.25),rgba(0,0,0,0.35)),url('https://cdn.phototourl.com/anon/2026-11-26-f0407389-a215-43ef-b1e0-c4201ade9d3d.jpg');background-size:cover;background-position:center;background-attachment:fixed;color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:0;min-height:100vh}
+#auth{max-width:100%!important;width:100%;height:100vh;margin:0;border:0;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background-image:linear-gradient(rgba(0,0,0,0.25),rgba(0,0,0,0.35)),url('https://cdn.phototourl.com/anon/2026-11-26-f0407389-a215-43ef-b1e0-c4201ade9d3d.jpg');background-size:cover;background-position:center;color:#fff;padding:20px}
+#auth .box{width:100%;max-width:380px;background:rgba(18,24,40,0.32);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:20px;padding:28px;border:1px solid rgba(255,255,255,0.22);box-shadow:0 16px 48px rgba(0,0,0,0.35)}
+h1{font-size:20px;margin:6px 0 12px}
+.card{background:rgba(26,32,48,0.45);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.18);border-radius:14px;padding:12px;margin-bottom:12px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+input,button{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px}
+input{min-width:0;flex:1}
+button{cursor:pointer}
+button.p{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:600}
+.seg{display:flex;border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.seg button{border:0;border-radius:0;background:transparent;padding:10px 14px}
+.seg button.on{background:var(--ac);color:#fff}
+label{display:flex;gap:6px;align-items:center;color:var(--mut);font-size:14px}
+label input{flex:none;width:18px;height:18px;padding:0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.col h3{margin:0 0 6px;text-align:center;font-size:14px;letter-spacing:.5px;padding:6px;border-radius:8px;color:#fff}
+.col.cash h3{background:var(--cash)}.col.carte h3{background:var(--carte)}
+.it{display:flex;justify-content:space-between;align-items:center;gap:4px;border-bottom:1px solid var(--bd);padding:7px 2px;font-size:14px}
+.it span:first-child{overflow-wrap:anywhere}
+.it b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.neg{color:var(--neg)}
+.x{border:0;background:none;color:var(--mut);padding:2px 6px}
+.tot{display:flex;justify-content:space-between;margin-top:8px;padding:8px;border-radius:8px;background:var(--bg);font-weight:700}
+.grand{text-align:center;font-size:22px;font-weight:800;margin-top:10px}
+.sc{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 6px;border-bottom:1px solid var(--bd);text-align:right}
+th:first-child,td:first-child{text-align:left}
+tbody tr{cursor:pointer}
+tr.cur td{background:var(--bg);font-weight:700}
+tfoot td{font-weight:800;border-bottom:0}
+.empty{color:var(--mut);text-align:center;padding:10px;font-size:13px}
+#auth input{width:100%;margin-bottom:8px;flex:none}#msg{color:var(--neg);font-size:13px;margin-top:8px;min-height:16px}.top{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mut);margin-bottom:8px;background:transparent}.chip{border-radius:20px;padding:8px 12px;font-size:14px;display:flex;align-items:center;gap:6px}.chip.on{background:var(--ac);color:#fff;border-color:var(--ac)}.chip .cn{cursor:pointer}.chip .cp{color:var(--mut);font-size:12px}.chip .cnt{display:flex;align-items:center;gap:2px;font-size:12px;color:var(--mut);background:var(--bg);padding:0 6px;border-radius:10px}.chip .dec{cursor:pointer;color:var(--neg);font-size:10px;padding:0 4px;line-height:1}.chip .dec:hover{color:var(--neg)}.tr{display:flex;gap:6px;margin-bottom:6px}.tr input:last-of-type{max-width:90px}#app{max-width:760px;margin-inline:auto;padding:12px}@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
+</head>
+<body>
+<div id="auth" style="display:none">
+  <div class="box">
+    <div id="auth-signin">
+      <h1 id="auth-title">💰 Daily Cash Register</h1>
+      <input id="em" type="email" placeholder="Email" autocomplete="email" style="background:#14181e;color:#fff;border-color:#a67c5c;box-shadow:inset 0 0 0 1px #a67c5c">
+      <input id="pw" type="password" placeholder="Password (6+ chars)" autocomplete="current-password" style="background:#14181e;color:#fff;border-color:#a67c5c;box-shadow:inset 0 0 0 1px #a67c5c">
+      <label style="display:flex;align-items:center;gap:8px;color:#fff;font-size:13px;margin-bottom:8px"><input id="rem" type="checkbox" style="width:18px;height:18px;accent-color:#8b5a3c"> Remember me</label>
+      <div class="row">
+        <button class="p" id="in" style="flex:1">Sign In</button>
+        <button id="up" style="flex:1;background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Create Account</button>
+      </div>
+      <button id="fp" style="margin-top:8px;background:none;border:none;color:#fff;text-decoration:underline;cursor:pointer;font:inherit">Forgot password?</button>
+      <div id="msg"></div>
+    </div>
+    <div id="auth-forgot" style="display:none">
+      <h1 id="auth-title">🔑 Reset Password</h1>
+      <div id="fp-step1">
+        <p style="color:rgba(255,255,255,0.8);font-size:13px;margin-bottom:16px">Enter your email to receive a 6-digit code.</p>
+        <input id="em-fp" type="email" placeholder="Email" autocomplete="email" style="background:#14181e;color:#fff;border-color:#a67c5c;box-shadow:inset 0 0 0 1px #a67c5c">
+        <div class="row" style="margin-top:16px">
+          <button id="fp-back" style="flex:1;background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Back</button>
+          <button class="p" id="fp-send-code" style="flex:1">Send Code</button>
+        </div>
+      </div>
+      <div id="fp-step2" style="display:none">
+        <p style="color:rgba(255,255,255,0.8);font-size:13px;margin-bottom:16px">Enter the 6-digit code sent to <b id="fp-email-display"></b>.</p>
+        <input id="fp-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code" style="letter-spacing:8px;text-align:center;font-size:18px;background:#14181e;color:#fff;border-color:#a67c5c;box-shadow:inset 0 0 0 1px #a67c5c">
+        <div class="row" style="margin-top:16px">
+          <button id="fp-back2" style="flex:1;background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Back</button>
+          <button class="p" id="fp-verify" style="flex:1">Verify Code</button>
+        </div>
+      </div>
+      <div id="fp-step3" style="display:none">
+        <p style="color:rgba(255,255,255,0.8);font-size:13px;margin-bottom:16px">Code verified. Set your new password.</p>
+        <input id="fp-new-pw" type="password" placeholder="New password (6+ chars)" autocomplete="new-password" style="background:#14181e;color:#fff;border-color:#a67c5c;box-shadow:inset 0 0 0 1px #a67c5c">
+        <input id="fp-confirm-pw" type="password" placeholder="Confirm new password" autocomplete="new-password" style="background:#14181e;color:#fff;border-color:#a67c5c;box-shadow:inset 0 0 0 1px #a67c5c">
+        <div class="row" style="margin-top:16px">
+          <button id="fp-back3" style="flex:1;background:rgba(255,255,255,0.2);color:#fff;border-color:rgba(255,255,255,0.3)">Back</button>
+          <button class="p" id="fp-reset" style="flex:1">Reset Password</button>
+        </div>
+      </div>
+      <div id="msg-fp"></div>
+    </div>
+  </div>
+</div>
+<div id="app" style="display:none"><div class="top"><span id="who" style="background:transparent;color:#1b2333;border-color:#a67c5c;box-shadow:inset 0 0 0 1px #a67c5c;padding:6px 10px;border-radius:8px;font-weight:600"></span><button id="out">Sign Out</button></div>
+<h1>💰 Daily Cash Register</h1>
+
+<div class="card">
+  <div class="row">
+    <button id="prev">‹</button>
+    <input type="date" id="date">
+    <button id="next">›</button>
+  </div>
+</div>
+
+<div class="card" id="tcard" style="display:none"><b>Rates</b><div id="tlist" style="margin:8px 0"></div><div class="row"><button id="tadd">+ Category</button><button class="p" id="tsave" style="margin-left:auto">Save</button></div></div>
+<div class="card">
+  <div class="row" id="chips" style="margin-bottom:8px"></div>
+  <div class="row" style="margin-bottom:8px"><b id="brk" style="font-size:13px;color:var(--mut)"></b></div>
+  <div class="row" style="margin-bottom:8px"><button id="tar">⚙️ Rates</button><button id="clr">↺ Clear</button><b id="sumv" style="margin-left:auto"></b></div>
+  <div class="row" style="margin-bottom:8px">
+    <input id="ref" placeholder="Reference (e.g. IDDRKKW)" autocomplete="off">
+    <input id="amt" type="number" inputmode="decimal" placeholder="Amount" autocomplete="off" style="max-width:140px" step="0.01">
+  </div>
+  <div class="row">
+    <div class="seg"><button id="tc" class="on">CASH</button><button id="tk">CARD</button></div>
+    <label><input type="checkbox" id="rf"> Refund</label>
+    <button class="p" id="add" style="margin-left:auto">Add</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="cols">
+    <div class="col cash"><h3>CASH</h3><div id="lc"></div></div>
+    <div class="col carte"><h3>CARD</h3><div id="lk"></div></div>
+  </div>
+  <div class="cols">
+    <div class="tot"><span>CASH</span><span id="tc2">0</span></div>
+    <div class="tot"><span>CARD</span><span id="tk2">0</span></div>
+  </div>
+  <div class="grand">Total: <span id="tt">0</span></div>
+</div>
+
+<div class="card">
+  <b>Daily Summary</b>
+  <div class="sc"><table>
+    <thead><tr><th>Day</th><th>Cash</th><th>Card</th><th>Total</th></tr></thead>
+    <tbody id="sum"></tbody>
+    <tfoot id="sumf"></tfoot>
+  </table></div>
+</div>
+
+</div>
+<script>
+var SB_URL="https://tmekctwbxrlmqzcuroae.supabase.co",SB_KEY="sb_publishable_uItFZQS134hNVRJDH29obw_SyXA7Pz7";
+var sb=supabase.createClient(SB_URL,SB_KEY),data={},type="cash",cur="",started=false,resettingPassword=false;
+function $(i){return document.getElementById(i)}
+function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function shift(n){var d=new Date(cur+"T12:00:00");d.setDate(d.getDate()+n);cur=iso(d);render()}
+function fmt(n){return (Math.round(n*100)/100).toLocaleString("fr-FR")}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function sums(arr){var c=0,k=0;arr.forEach(function(x){if(x.type=="cash")c+=x.amt;else k+=x.amt});return[c,k]}
+function list(arr,t){
+  var r=arr.filter(function(x){return x.type==t});
+  if(!r.length)return '<div class="empty">—</div>';
+  return r.map(function(x){return '<div class="it"><span>'+esc(x.ref||"")+'</span><span><b class="'+(x.amt<0?"neg":"")+'">'+fmt(x.amt)+'</b><button class="x" data-id="'+x.id+'">✕</button></span></div>'}).join("");
+}
+function drawChips(){var cnt={};picks.forEach(function(i){cnt[i]=(cnt[i]||0)+1});$("chips").innerHTML=prices.map(function(c,i){return '<button class="chip'+(cnt[i]?' on':'')+'" data-i="'+i+'"><span class="cn">'+esc(c.n)+'</span><span class="cp"> · '+fmt(c.p)+'</span>'+(cnt[i]?' <span class="cnt">×'+cnt[i]+'<span class="dec" data-dec="'+i+'">✕</span></span>':'')+'</button>'}).join("")||'<span class="empty">Add rates</span>'}
+function render(){
+  $("date").value=cur;
+  var arr=data[cur]||[],t=sums(arr);
+  $("lc").innerHTML=list(arr,"cash");$("lk").innerHTML=list(arr,"carte");
+  $("tc2").textContent=fmt(t[0]);$("tk2").textContent=fmt(t[1]);$("tt").textContent=fmt(t[0]+t[1]);
+  var keys=Object.keys(data).filter(function(k){return data[k].length}).sort(),gc=0,gk=0;
+  $("sum").innerHTML=keys.length?keys.map(function(k){var q=sums(data[k]);gc+=q[0];gk+=q[1];
+    var p=k.split("-");
+    return '<tr data-d="'+k+'" class="'+(k==cur?"cur":"")+'"><td>'+p[2]+"/"+p[1]+'</td><td>'+fmt(q[0])+'</td><td>'+fmt(q[1])+'</td><td>'+fmt(q[0]+q[1])+'</td></tr>'}).join(""):'<tr><td colspan="4" class="empty">No entries yet</td></tr>';
+  $("sumf").innerHTML=keys.length?'<tr><td>Total</td><td>'+fmt(gc)+'</td><td>'+fmt(gk)+'</td><td>'+fmt(gc+gk)+'</td></tr>':"";
+}
+function setType(t){type=t;$("tc").className=t=="cash"?"on":"";$("tk").className=t=="carte"?"on":""}
+$("tc").onclick=function(){setType("cash")};
+$("tk").onclick=function(){setType("carte")};
+$("prev").onclick=function(){shift(-1)};
+$("next").onclick=function(){shift(1)};
+$("date").onchange=function(){if(this.value){cur=this.value;render()}};
+var prices=[{n:"Adult",p:284},{n:"Child",p:200},{n:"Infant",p:131},{n:"Car",p:1349},{n:"Motorcycle",p:469},{n:"Bicycle",p:0},{n:"Bus",p:3280},{n:"Private Van",p:1534},{n:"Trailer",p:513},{n:"Caravan",p:1814},{n:"ETS Surcharge",p:580},{n:"Booking Fee",p:20}],picks=[],tdata=[];
+function drawChips(){var cnt={};picks.forEach(function(i){cnt[i]=(cnt[i]||0)+1});$("chips").innerHTML=prices.map(function(c,i){return '<button class="chip'+(cnt[i]?' on':'')+'" data-i="'+i+'"><span class="cn">'+esc(c.n)+'</span><span class="cp"> · '+fmt(c.p)+'</span>'+(cnt[i]?' <span class="cnt">×'+cnt[i]+'<span class="dec" data-dec="'+i+'">✕</span></span>':'')+'</button>'}).join("")||'<span class="empty">Add rates</span>'}
+function fill(){
+  var parts=picks.map(function(i){return prices[i]?prices[i].p:0});
+  var bookingFee = prices[11]?prices[11].p:20; // Booking Fee always added
+  var s=parts.reduce(function(a,b){return a+b},0) + bookingFee;
+  var displayParts = parts.slice();
+  displayParts.push(bookingFee);
+  $("brk").textContent=displayParts.join(" + ")+" = "+fmt(s);
+  $("amt").value=Math.round(s*100)/100
+}
+function mkref(){var b=$("ref").value.trim(),cnt={},ord=[];picks.forEach(function(i){if(!prices[i])return;if(!cnt[i]){cnt[i]=0;ord.push(i)}cnt[i]++});var lab=ord.map(function(i){return prices[i].n+(cnt[i]>1?" ×"+cnt[i]:"")}).join(" + "); if(prices[11]) lab = lab ? lab+" + "+prices[11].n : prices[11].n; return b&&lab?b+" · "+lab:(b||lab)}
+function drawT(){$("tlist").innerHTML=tdata.map(function(c,i){return '<div class="tr"><input data-k="n" data-i="'+i+'" value="'+esc(c.n)+'" placeholder="Category"><input data-k="p" data-i="'+i+'" type="number" inputmode="decimal" value="'+c.p+'" placeholder="Prix"><button class="x" data-del="'+i+'">✕</button></div>'}).join("")}
+$("tar").onclick=function(){tdata=prices.map(function(c){return{n:c.n,p:c.p}});drawT();$("tcard").style.display=$("tcard").style.display=="none"?"block":"none"};
+$("tadd").onclick=function(){tdata.push({n:"",p:0});drawT()};
+$("tlist").oninput=function(e){var i=e.target.dataset.i,k=e.target.dataset.k;if(i==null)return;tdata[i][k]=k=="p"?parseFloat(e.target.value)||0:e.target.value};
+$("tlist").onclick=function(e){var d=e.target.dataset.del;if(d!=null){tdata.splice(+d,1);drawT()}};
+$("tsave").onclick=async function(){prices=tdata.filter(function(c){return c.n.trim()}).map(function(c){return{n:c.n.trim(),p:c.p}});picks=[];drawChips();$("tcard").style.display="none";var r=await sb.auth.updateUser({data:{prices:prices}});if(r.error)alert("Error: "+r.error.message)};
+$("chips").onclick=function(e){
+  var b=e.target.closest(".chip");if(!b)return;
+  if(e.target.closest(".dec")){
+    var i=+e.target.dataset.dec,idx=picks.indexOf(i);
+    if(idx>-1){picks.splice(idx,1);fill();drawChips()}
+    return
+  }
+  picks.push(+b.dataset.i);fill();drawChips()
+};
+$("clr").onclick=function(){picks=[];$("amt").value="";drawChips()};
+$("amt").oninput=function(){picks=[];drawChips()};
+async function add(){
+  var v=parseFloat($("amt").value);
+  if(isNaN(v)){$("amt").focus();return}
+  if($("rf").checked)v=-Math.abs(v);
+  var r=await sb.from("entries").insert({day:cur,ref:mkref(),amt:v,type:type}).select().single();
+  if(r.error){alert("Erreur: "+r.error.message);return}
+  if(!r.data || !r.data.id){alert("Error: No ID returned");return}
+  (data[cur]=data[cur]||[]).push({id:r.data.id,ref:r.data.ref,amt:v,type:r.data.type});
+  $("ref").value="";$("amt").value="";$("rf").checked=false;picks=[];drawChips();$("amt").focus();render();
+}
+$("add").onclick=add;
+$("amt").onkeydown=function(e){if(e.key=="Enter")add()};
+$("ref").onkeydown=function(e){if(e.key=="Enter")add()};
+document.addEventListener("click",function(e){
+  var x=e.target.closest(".x");
+  if(x){
+    var id=x.dataset.id;
+    if(!id){return}
+    sb.from("entries").delete().eq("id",id).then(function(r){if(r.error){alert(r.error.message);return}data[cur]=(data[cur]||[]).filter(function(i){return i.id!=id});render()});return}
+  var tr=e.target.closest("tr[data-d]");
+  if(tr){cur=tr.dataset.d;render();window.scrollTo(0,0)}
+});
+cur=iso(new Date());drawChips();
+function msg(t){$("msg").textContent=t||""}
+async function start(sess){
+  $("auth").style.display="none";$("app").style.display="block";
+  $("who").textContent="✅ "+sess.user.email;
+  var mp=sess.user.user_metadata&&sess.user.user_metadata.prices;
+  if(Array.isArray(mp) && mp.length){
+    prices=mp;
+  }else{
+    prices=[{n:"Adult",p:284},{n:"Child",p:200},{n:"Infant",p:131},{n:"Car",p:1349},{n:"Motorcycle",p:469},{n:"Bicycle",p:0},{n:"Bus",p:3280},{n:"Private Van",p:1534},{n:"Trailer",p:513},{n:"Caravan",p:1814},{n:"ETS Surcharge",p:580},{n:"Booking Fee",p:20}];
+  }
+  picks=[];drawChips();
+
+  var r=await sb.from("entries").select("*").order("created_at").limit(5000);
+  data={};
+  if(r.data)r.data.forEach(function(x){(data[x.day]=data[x.day]||[]).push({id:x.id,ref:x.ref,amt:Number(x.amt),type:x.type})});
+  render();
+}
+function showAuth(){$("app").style.display="none";$("auth").style.display="block";data={}}
+$("in").onclick=async function(){msg();var r=await sb.auth.signInWithPassword({email:$("em").value.trim(),password:$("pw").value});if(r.error){msg(r.error.message);return} if($("rem").checked){try{localStorage.setItem("sb-session",JSON.stringify(r.data.session))}catch(e){}}};
+$("em").onkeydown=function(e){if(e.key=="Enter")$("pw").focus()};
+$("pw").onkeydown=function(e){if(e.key=="Enter")$("in").click()};
+$("up").onclick=async function(){msg();var r=await sb.auth.signUp({email:$("em").value.trim(),password:$("pw").value});if(r.error)msg(r.error.message);else if(!r.data.session)msg("Account created. Check email then sign in.")};
+function msg2(t){$("msg-fp").textContent=t||""}
+$("fp").onclick=function(){$("auth-signin").style.display="none";$("auth-forgot").style.display="block";showFpStep(1);$("em-fp").value=$("em").value.trim();$("em-fp").focus();msg2();resettingPassword=true};
+function showFpStep(step){
+  $("fp-step1").style.display=step===1?"block":"none";
+  $("fp-step2").style.display=step===2?"block":"none";
+  $("fp-step3").style.display=step===3?"block":"none";
+}
+$("fp-back").onclick=function(){$("auth-forgot").style.display="none";$("auth-signin").style.display="block";$("em").focus();resettingPassword=false};
+$("fp-back2").onclick=function(){showFpStep(1);$("em-fp").focus();msg2();resettingPassword=false};
+$("fp-back3").onclick=function(){showFpStep(2);$("fp-code").focus();msg2();resettingPassword=false};
+$("fp-send-code").onclick=async function(){
+  msg2();var em=$("em-fp").value.trim();
+  if(!em){msg2("Enter your email");return}
+  var r=await sb.auth.resetPasswordForEmail(em,{redirectTo:window.location.href});
+  if(r.error){msg2(r.error.message);return}
+  msg2("Code sent to "+em+". Check your inbox.");
+  $("fp-email-display").textContent=em;
+  showFpStep(2);
+  setTimeout(function(){$("fp-code").focus()},100);
+};
+$("em-fp").onkeydown=function(e){if(e.key=="Enter")$("fp-send-code").click()};
+$("fp-verify").onclick=async function(){
+  msg2();var code=$("fp-code").value.trim();
+  if(code.length!==6){msg2("Enter 6-digit code");return}
+  var em=$("em-fp").value.trim();
+  resettingPassword=true;
+  var r=await sb.auth.verifyOtp({email:em,token:code,type:"recovery"});
+  if(r.error){resettingPassword=false;msg2(r.error.message);return}
+  if(!r.data.session){resettingPassword=false;msg2("Verification failed. Try again.");return}
+  // Persist session manually for file:// protocol
+  try{localStorage.setItem("sb-session",JSON.stringify(r.data.session))}catch(e){}
+  msg2("Code verified. Set new password.");
+  showFpStep(3);
+  setTimeout(function(){$("fp-new-pw").focus()},100);
+};
+$("fp-code").onkeydown=function(e){if(e.key=="Enter")$("fp-verify").click()};
+$("fp-reset").onclick=async function(){
+  msg2();
+  var pw1=$("fp-new-pw").value;
+  var pw2=$("fp-confirm-pw").value;
+  if(pw1.length<6){msg2("Password must be 6+ chars");return}
+  if(pw1!==pw2){msg2("Passwords do not match");return}
+  // Restore session for file:// protocol
+  var stored=null;
+  try{var s=localStorage.getItem("sb-session"); if(s) stored=JSON.parse(s)}catch(e){}
+  if(stored){await sb.auth.setSession({access_token:stored.access_token,refresh_token:stored.refresh_token})}
+  var r=await sb.auth.updateUser({password:pw1});
+  if(r.error){msg2(r.error.message);return}
+  try{localStorage.removeItem("sb-session")}catch(e){}
+  resettingPassword=false;
+  msg2("Password updated. Redirecting...");
+  setTimeout(function(){$("auth-forgot").style.display="none";$("auth-signin").style.display="block";$("em").focus();msg2()},1000);
+};
+$("fp-new-pw").onkeydown=function(e){if(e.key=="Enter")$("fp-confirm-pw").focus()};
+$("fp-confirm-pw").onkeydown=function(e){if(e.key=="Enter")$("fp-reset").click()};
+$("out").onclick=async function(){try{localStorage.removeItem("sb-session")}catch(e){}var r=await sb.auth.signOut();if(r.error)alert(r.error.message)};
+sb.auth.onAuthStateChange(function(ev,sess){
+  if(resettingPassword) return;
+  if(sess){if(!started||ev=="SIGNED_IN"){started=true;setTimeout(function(){start(sess)},0)}}
+  else{started=false;showAuth()}
+});
+sb.auth.getSession().then(function(r){
+  if(resettingPassword){showAuth();return}
+  if(r.data.session){
+    started=true;setTimeout(function(){start(r.data.session)},0);
+  }else{
+    var stored=null;
+    try{var s=localStorage.getItem("sb-session"); if(s) stored=JSON.parse(s)}catch(e){}
+    if(stored){
+      sb.auth.setSession({access_token:stored.access_token,refresh_token:stored.refresh_token}).then(function(r2){
+        if(r2.data.session){started=true;setTimeout(function(){start(r2.data.session)},0)}
+        else showAuth();
+      });
+    }else showAuth();
+  }
+});
+</script>
+</body>
+</html>
+
+
